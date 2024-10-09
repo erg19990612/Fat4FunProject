@@ -1,0 +1,201 @@
+﻿@model IEnumerable<FAT4FUN.BackEnd.Site.Models.ViewModels.UserVm>
+
+@{
+    ViewBag.Title = "UserCheck";
+}
+<style>
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            left: 4px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+        }
+
+    input:checked + .slider {
+        background-color: #4CAF50;
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+</style>
+
+<h2>員工狀態</h2>
+
+<!-- 搜尋功能 -->
+<div class="form-group mb-3 col-md-7" >
+    <label for="searchInput">搜尋員工：</label>
+    <input type="text" id="searchInput" class="form-control" placeholder="輸入要搜尋的關鍵字...">
+</div>
+
+<!-- 上下架篩選功能 -->
+<label for="statusFilter" class="mr-2">顯示帳號狀態：</label>
+<div class="form-inline mb-3">
+    <select id="statusFilter" class="form-control form-control-sm">
+        <option value="all" selected>全部</option>
+        <option value="true">在職</option>
+        <option value="false">離職</option>
+    </select>
+</div>
+
+<table class="table" id="userTable">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Account)</th>
+            <th>@Html.DisplayNameFor(model => model.Name)</th>
+            <th>@Html.DisplayNameFor(model => model.Phone)</th>
+            <th>@Html.DisplayNameFor(model => model.Email)</th>
+            <th>@Html.DisplayNameFor(model => model.Address)</th>
+            <th>@Html.DisplayNameFor(model => model.Roles)</th>
+            <th>@Html.DisplayNameFor(model => model.Status)</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr data-status="@item.Status.ToString().ToLower()">
+                <td>@Html.DisplayFor(modelItem => item.Account)</td>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Phone)</td>
+                <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                <td>@Html.DisplayFor(modelItem => item.Address)</td>
+                <td>
+                    <select class="form-control role-dropdown" data-id="@item.Id">
+                        <option selected disabled>請選擇權限</option>
+                        @foreach (var role in ViewBag.Roles as List<SelectListItem>)
+                        {
+                            <option value="@role.Value">@role.Text</option>
+                        }
+                    </select>
+                    <p class="mt-2 current-role">目前權限：@string.Join("、", item.Roles)</p>
+                </td>
+                <td>
+                    <label class="switch">
+                        <input type="checkbox" class="toggle-status" data-id="@item.Id" @(item.Status ? "checked" : "")>
+                        <span class="slider"></span>
+                    </label>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        // 搜尋功能
+        document.getElementById("searchInput").addEventListener("input", function () {
+            var searchValue = this.value.toLowerCase();
+            var rows = document.querySelectorAll("#userTable tbody tr");
+
+            rows.forEach(function (row) {
+                var rowText = row.textContent.toLowerCase();
+                if (rowText.includes(searchValue)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+
+        // 狀態篩選功能
+        document.getElementById("statusFilter").addEventListener("change", function () {
+            var selectedValue = this.value;
+            var rows = document.querySelectorAll("#userTable tbody tr");
+
+            rows.forEach(function (row) {
+                var status = row.getAttribute("data-status");
+
+                if (selectedValue === "all" || status === selectedValue) {
+                    row.style.display = "";
+                    
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+
+        // 滑動開關的狀態切換 (避免頁面刷新)
+        $('.toggle-status').change(function () {
+            var userId = $(this).data('id');
+            var newStatus = $(this).prop('checked');
+
+            $.ajax({
+                url: '@Url.Action("ToggleUserStatus", "Users")',
+                type: 'POST',
+                data: {
+                    id: userId,
+                    status: newStatus
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert("狀態更新成功");
+                        location.reload();
+                    } else {
+                        alert("狀態更新失敗：" + response.message);
+                    }
+                },
+                error: function () {
+                    alert("發生錯誤，請稍後再試");
+                }
+            });
+        });
+
+        // 處理角色下拉選單變更並更新當前權限顯示
+        $('.role-dropdown').change(function () {
+            var userId = $(this).data('id');
+            var newRole = $(this).find("option:selected").text();
+
+            $.ajax({
+                url: '@Url.Action("UpdateUserRole", "Users")',
+                type: 'POST',
+                data: {
+                    id: userId,
+                    newRole: $(this).val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        $(this).siblings(".current-role").text("目前權限：" + newRole);
+                        alert("角色更新成功",);
+                    } else {
+                        alert("角色更新失敗：" + response.message);
+                    }
+                }.bind(this),
+                error: function () {
+                    alert("發生錯誤，請稍後再試");
+                }
+            });
+        });
+    </script>
+}

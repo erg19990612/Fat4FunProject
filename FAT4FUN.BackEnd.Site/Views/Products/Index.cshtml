@@ -1,0 +1,324 @@
+﻿@model IPagedList<FAT4FUN.BackEnd.Site.Models.ViewModels.ProductVm>
+@using PagedList;
+@using PagedList.Mvc;
+
+@*@{
+        ViewBag.Title = "Index";
+    }*@
+
+<style>
+    .table th, .table td {
+        text-align: center; /* 讓文字居中顯示 */
+        vertical-align: middle; /* 讓文字垂直居中對齊 */
+    }
+
+        .table th:nth-child(1), .table td:nth-child(1) {
+            width: 8%;
+            white-space: nowrap;
+        }
+
+        .table th:nth-child(2), .table td:nth-child(2) {
+            width: 10%; /* CategoryName */
+        }
+
+        .table th:nth-child(3), .table td:nth-child(3) {
+            width: 10%; /* BrandName */
+        }
+
+        .table th:nth-child(4), .table td:nth-child(4) {
+            width: 15%; /* Name */
+        }
+
+        .table th:nth-child(5), .table td:nth-child(5) {
+            width: 150px; /* 可以根據需要調整寬度 */
+            max-width: 150px; /* 設置最大寬度 */
+            white-space: nowrap; /* 禁止文字換行 */
+            overflow: hidden; /* 隱藏超出的文字 */
+            text-overflow: ellipsis; /* 用...表示超出的部分 */
+        }
+
+        .table th:nth-child(6), .table td:nth-child(6) {
+            width: 10%; /* Price */
+        }
+
+        .table th:nth-child(7), .table td:nth-child(7) {
+            width: 10%; /* Sale */
+        }
+
+        .table th:nth-child(8), .table td:nth-child(8) {
+            width: 10%; /* Status */
+        }
+
+        .table th:nth-child(9), .table td:nth-child(9) {
+            width: 10%; /* CreateDate */
+        }
+
+        .table th:nth-child(10), .table td:nth-child(10) {
+            width: 10%; /* ModifyDate */
+        }
+
+        .table th:nth-child(11), .table td:nth-child(11) {
+            width: 15%; /* 操作欄位 */
+        }
+
+    .small-input {
+        width: 150px; /* 根據需求調整這個數值 */
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    #page-selector {
+    display: flex;
+    margin: 20px;
+    font-family: Arial, sans-serif;
+    }
+
+    #li {
+        dispaly: inline-block;
+
+    }
+
+    #page-selector a {
+    text-decoration: none;
+    padding: 10px 15px;
+    margin: 0 0px;
+    color: #007bff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    }
+
+    #page-selector a:hover {
+    background-color: #007bff;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #page-selector a.active {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    border-color: #007bff;
+    }
+
+    #page-selector a:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.5);
+    }
+
+    #page-selector li.active a {
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+        border-color: #007bff;
+    }
+</style>
+<h2 class="mb-5">產品資訊</h2>
+
+
+<!--<form method="get" action="@Url.Action("Index")">
+    <div class="form-inline mt-3 mb-3">
+        <label for="categoryName" class="mr-2">類別名稱：</label>
+        <input type="text" id="categoryName" name="categoryName" class="form-control form-control-sm mr-2 small-input" />
+
+        <label for="brandName" class="mr-2">品牌名稱：</label>
+        <input type="text" id="brandName" name="brandName" class="form-control form-control-sm mr-2 small-input" />
+
+        <label for="productName" class="mr-2">產品名稱：</label>
+        <input type="text" id="productName" name="productName" class="form-control form-control-sm mr-2 small-input" />-->
+@*<label for="minPrice" class="mr-2">最低價格：</label>
+    <input type="number" id="minPrice" name="minPrice" class="form-control form-control-sm mr-2 small-input" />
+
+    <label for="maxPrice" class="mr-2">最高價格：</label>
+    <input type="number" id="maxPrice" name="maxPrice" class="form-control form-control-sm mr-2 small-input" />*@
+
+<!--<button type="submit" class="btn btn-primary">篩選</button>
+    </div>
+
+
+
+    <div class="form-inline mb-2 ">
+        <label for="statusFilter" class="mr-2 ">顯示商品狀態：</label>
+        <select id="statusFilter" class="form-control form-control-sm ">
+            <option value="true" selected>啟用</option>
+            <option value="false">不啟用</option>
+        </select>
+
+    </div>
+
+    <p>
+        @Html.ActionLink("新增商品", "Create", null, new { @class = "btn btn-primary mt-3 " })
+    </p>
+</form>-->
+
+
+<form method="get" action="@Url.Action("Index")">
+    <div class="d-flex flex-wrap align-items-center mb-3">
+        <div class="mr-3">
+            <label for="categoryName" class="mr-2">類別名稱：</label>
+            <input type="text" id="categoryName" name="categoryName" class="form-control form-control-sm small-input" />
+        </div>
+
+        <div class="mr-3">
+            <label for="brandName" class="mr-2">品牌名稱：</label>
+            <input type="text" id="brandName" name="brandName" class="form-control form-control-sm small-input" />
+        </div>
+
+        <div class="mr-3">
+            <label for="productName" class="mr-2">產品名稱：</label>
+            <input type="text" id="productName" name="productName" class="form-control form-control-sm small-input" />
+        </div>
+
+        <div class="mr-3">
+            <label for="statusFilter" class="mr-2">顯示商品狀態：</label>
+            <select id="statusFilter" name="statusFilter" class="form-control form-control-sm">
+                <option value="true" selected>啟用</option>
+                <option value="false">不啟用</option>
+            </select>
+        </div>
+
+        <div class="mr-3 mt-4">
+            <button type="submit" class="btn btn-primary">篩選</button>
+        </div>
+
+        <div class="ml-auto">
+            @Html.ActionLink("新增商品", "Create", null, new { @class = "btn btn-primary mt-4" })
+        </div>
+    </div>
+</form>
+
+
+<table class="table table-bordered table-striped" id="productTable">
+    <thead class="table-dark">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.First().Id)</th>
+            <th>@Html.DisplayNameFor(model => model.First().CategoryName)</th>
+            <th>@Html.DisplayNameFor(model => model.First().BrandName)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Name)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Price)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Sale)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Status)</th>
+            <th>@Html.DisplayNameFor(model => model.First().CreateDate)</th>
+            <th>@Html.DisplayNameFor(model => model.First().ModifyDate)</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr class="product-row @(item.Status ? "enabled" : "disabled")">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CategoryName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BrandName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                @*<td>
+                        <div class="description-content">
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </div>
+                    </td>*@
+                <td>
+                    @foreach (var sku in item.ProductSkus)
+                    {
+                        @sku.Price.ToString("N0")
+                    }
+                </td>
+                <td>
+                    @foreach (var sku in item.ProductSkus)
+                    {
+                        @sku.Sale.ToString("N0")
+                    }
+                </td>
+                <td>
+                    @if (item.Status)
+                    {
+                        <span class="badge badge-success">啟用</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-secondary">不啟用</span>
+                    }
+                    @*@Html.DisplayFor(modelItem => item.Status)*@
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreateDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ModifyDate)
+                </td>
+                <td>
+                    @Html.ActionLink("編輯", "Edit", new { id = item.Id }, new { @class = "btn btn-sm btn-primary" })
+                    @*using (Html.BeginForm("Delete", "Products", FormMethod.Post, new { @class = "d-inline" }))
+                        {
+                            @Html.AntiForgeryToken() <!-- 防止 CSRF 攻擊 -->
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('確定要刪除這個產品嗎？');">
+                                Delete
+                            </button>
+                        }*@
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+<div class="d-flex justify-content-center" id="page-selector">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
+        new PagedListRenderOptions
+        {
+            DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+            DisplayLinkToLastPage = PagedListDisplayMode.Always,
+            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+            DisplayLinkToNextPage = PagedListDisplayMode.Always,
+            LinkToPreviousPageFormat = "«",
+            LinkToNextPageFormat = "»",
+            LinkToFirstPageFormat = "««",
+            LinkToLastPageFormat = "»»",
+            MaximumPageNumbersToDisplay = 5,
+            //UlElementClasses = "pagination",
+            //LiElementClasses = "page-item",
+            //PageClasses = "page-link"
+        })
+</div>
+
+@section Scripts {
+    <script>
+        // 當選擇商品狀態時，篩選顯示對應的商品
+        document.getElementById('statusFilter').addEventListener('change', function () {
+            var selectedStatus = this.value;
+            var rows = document.querySelectorAll('.product-row');
+
+            rows.forEach(function (row) {
+                if (selectedStatus === 'true') {
+                    if (row.classList.contains('enabled')) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                } else if (selectedStatus === 'false') {
+                    if (row.classList.contains('disabled')) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+        });
+
+        // 頁面加載時默認隱藏不啟用商品
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('statusFilter').dispatchEvent(new Event('change'));
+        });
+    </script>
+}

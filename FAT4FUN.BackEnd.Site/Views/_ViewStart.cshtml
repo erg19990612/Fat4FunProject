@@ -1,0 +1,16 @@
+﻿@{
+
+
+    if (User.Identity.IsAuthenticated)
+    {
+        // 登录后的布局
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        // 未登录时使用的默认布局
+        Layout = "~/Views/Shared/_Layout2.cshtml";
+    }
+
+}
+@*Layout = "~/Views/Shared/_Layout.cshtml";*@

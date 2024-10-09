@@ -1,0 +1,119 @@
+﻿@model FAT4FUN.BackEnd.Site.Models.ViewModels.ProductVm
+
+@*@{
+        ViewBag.Title = "Edit";
+    }*@
+
+<h2 class="my-4">編輯商品</h2>
+
+<style>
+    .small-input {
+        width: 300px; /* 調整輸入框和下拉選單的寬度 */
+    }
+    h2{
+                text-align: center;
+    
+    }
+</style>
+
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>商品資訊</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.CategoryId)
+        @Html.HiddenFor(model => model.BrandId)
+        @Html.HiddenFor(model => model.ProductSkuId)
+
+        <!-- 類別名稱 -->
+        <div class="form-group row">
+            <label class="control-label col-md-2 col-form-label">類別名稱</label>
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model.CategoryName, new { @class = "form-control small-input" })
+            </div>
+        </div>
+
+        <!-- 品牌名稱 -->
+        <div class="form-group row">
+            <label class="control-label col-md-2 col-form-label">品牌名稱</label>
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model.BrandName, new { @class = "form-control small-input" })
+            </div>
+        </div>
+
+        <!-- 商品名稱 -->
+        <div class="form-group row">
+            <label class="control-label col-md-2 col-form-label">商品名稱</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control small-input", placeholder = "請輸入商品名稱" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- 商品描述 -->
+        <div class="form-group row">
+            <label class="control-label col-md-2 col-form-label">商品描述</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control small-input" } })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- SKU名稱 -->
+        <div class="form-group row">
+            <label class="control-label col-md-2 col-form-label">規格名稱</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ProductSkuName, new { htmlAttributes = new { @class = "form-control small-input", placeholder = "請輸入 SKU 名稱" } })
+                @Html.ValidationMessageFor(model => model.ProductSkuName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- 價格 -->
+        <div class="form-group row">
+            <label class="control-label col-md-2 col-form-label">價格</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control small-input", placeholder = "請輸入價格" } })
+                @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- 折扣 -->
+        <div class="form-group row">
+            <label class="control-label col-md-2 col-form-label">特價</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Sale, new { htmlAttributes = new { @class = "form-control small-input", placeholder = "請輸入折扣" } })
+                @Html.ValidationMessageFor(model => model.Sale, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- 狀態管理 -->
+        <div class="form-group row">
+            <label class="control-label col-md-2 col-form-label">狀態管理</label>
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Status, new SelectList(new[]
+                {
+                    new { Value = "true", Text = "啟用" },
+                    new { Value = "false", Text = "不啟用" }
+                }, "Value", "Text"), new { @class = "form-control small-input" })
+                @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- 保存按鈕 -->
+        <div class="form-group row">
+            <div class="col-md-10 offset-md-2">
+                <input type="submit" value="保存" class="btn btn-primary" />
+                @Html.ActionLink("返回列表", "Index", null, new { @class = "btn btn-secondary ml-2" })
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
